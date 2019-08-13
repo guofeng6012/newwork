@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.user.mapper.OrgDao">
+
+    <select id="findByPageOrg" resultType="com.xsungroup.tms.user.vo.OrgViewVO">
+
+        SELECT
+        	o.org_id,
+        	o.audit_status,
+        	o.org_name,
+        	o.is_accountant,
+        	o.org_role,
+        	o.org_source,
+        	e.license_org_code,
+        	e.road_trans_word,
+            e.danger_trans_code,
+            e.road_trans_word,
+            e.road_trans_province,
+            e.road_trans_no
+
+        FROM
+	        t_org o
+        LEFT JOIN t_org_extend e
+        ON o.org_id = e.org_id
+        where
+         o.org_Id = #{org.orgId} or o.group_id =#{org.groupId}
+           <if test="org.orgName != null and org.orgName != '' ">
+               and o.org_Name like CONCAT('%',#{org.orgName},'%')
+           </if>
+           <if test="org.orgSource != null and org.orgSource != '' ">
+               and o.org_source = #{org.orgSource}
+           </if>
+           <if test="org.orgRole != null and org.orgRole != ''">
+                and o.org_role = #{org.orgRole}
+           </if>
+           <if test="org.auditStatus != null and org.auditStatus != ''">
+                and audit_status = #{org.auditStatus}
+           </if>
+        and
+        o.is_able = 1
+    </select>
+
+    <select id="getByDetailOrg" resultType="com.xsungroup.tms.user.vo.OrgDetailVO">
+        select
+           t.org_Role,
+           t.audit_Status,
+           t.org_Type,
+           t.org_Source,
+           t.biz_Type,
+           t.is_Legal,
+           t.is_Accountant,
+           t.is_Operation,
+           c.*
+        from
+            t_org t
+        left join t_org_extend c
+        on t.org_id = c.org_id
+        where
+        t.org_id = #{orgId} and t.is_able = 1
+    </select>
+
+
+    <select id="findByAuditOrgPage" resultType="com.xsungroup.tms.user.vo.OrgAuditViewVO">
+        SELECT
+            t.org_id,
+        	t.org_name,
+        	t.audit_status,
+        	c.phone_no,
+        	e.license_org_code,
+            e.road_trans_word,
+            e.road_trans_province,
+            e.road_trans_no,
+            e.first_submit_time,
+        	e.last_submit_time,
+        	e.first_audit_time,
+        	e.last_audit_time,
+        	e.audit_mode,
+        	e.audit_user
+        FROM
+        	t_org t LEFT JOIN t_org_extend e ON t.org_id = e.org_id
+        LEFT JOIN c_user c on t.org_id = c.org_id
+        WHERE
+            <if test="phoneNo != null and phoneNo != ''">
+                 c.phone_no like CONCAT('%',#{phoneNo},'%') and
+            </if>
+            <if test="orgName != null and orgName != ''">
+                 t.org_name LIKE CONCAT('%',#{orgName},'%') and
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                 t.audit_status = #{auditStatus} and
+            </if>
+            t.is_able = 1 and t.biz_type = 0
+    </select>
+
+    <select id="countIdCardUser" resultType="integer">
+        select
+        count(1)
+        from t_org o
+        left join
+        t_org_extend e on o.org_id = e.org_id
+        where o.biz_type = 1 and e.legal_person_id_no = #{idCard}
+    </select>
+
+</mapper>

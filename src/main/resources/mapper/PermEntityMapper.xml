@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.user.mapper.PermDao">
+
+    <!--<select id="getPermByRoleId" resultType="PermEntity">-->
+    <!--SELECT perm.permission_id, perm.permission_name, perm.permission_code, perm.icon_class, perm.sort, perm.url, perm.parent_id, perm.component-->
+    <!--from c_permission perm-->
+    <!--left join  c_role_permission relate  on perm.permission_id = relate.permission_id-->
+    <!--WHERE perm.type = '1'-->
+    <!--and relate.role_id = #{roleId}-->
+    <!--</select>-->
+
+
+    <select id="findByPermList" resultType="com.xsungroup.tms.user.common.MenuTree">
+        SELECT
+                cp.permission_id as 'id',
+	            cp.permission_name as 'name',
+	            cp.permission_code as 'code',
+	            cp.parent_id,
+	            cp.url,
+	            cp.icon_class ,
+	            cp.sort ,
+	            cp.component,
+                IFNULL(a.checked,'0') as 'checked'
+            FROM
+                c_permission cp
+            LEFT JOIN (
+                SELECT
+                    p.*,  "1"  as 'checked'
+                FROM
+                    c_permission p
+                LEFT JOIN c_role_permission r ON p.permission_id = r.permission_id
+                WHERE
+                    r.role_id = #{roleId} and r.is_able = 1
+            ) as a on a.permission_id = cp.permission_id
+            where cp.is_able = 1
+
+    </select>
+
+    <update id="updatePermRole" parameterType="java.lang.String">
+        update  c_role_permission set is_able = 0 where role_id = #{roleId}
+    </update>
+
+    <select id="findUserPermList" resultType="com.xsungroup.tms.user.entity.PermEntity">
+        select
+            p.permission_id,p.permission_name,p.permission_code,p.component,p.url
+            ,p.type,p.icon_class,p.parent_id,p.sort,p.flg_hidden
+        from c_user_role ur,c_role_permission up,c_permission p
+        WHERE p.permission_id = up.permission_id AND up.role_id = ur.role_id
+        AND p.is_able = 1 and up.is_able = 1 and ur.is_able = 1
+        AND ur.user_id = #{userId}
+        GROUP BY  p.permission_id,p.permission_name,p.permission_code,p.component,p.url,p.type,p.icon_class,p.parent_id,p.sort,p.flg_hidden
+        ORDER BY p.sort,p.parent_id,p.type
+
+    </select>
+</mapper>

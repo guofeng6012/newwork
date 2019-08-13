@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.user.mapper.UserOrgDao">
+
+    <!--批量添加子表的数据-->
+    <insert id="addBatchData">
+        insert into c_user_org(user_org_id,user_id,org_id,check_type,is_default,is_able) VALUES
+        <foreach collection="list" item="entity" separator=",">
+            (#{entity.userOrgId},#{entity.userId},#{entity.orgId},#{entity.checkType},#{entity.isDefault},#{entity.isAble})
+        </foreach>
+    </insert>
+
+</mapper>

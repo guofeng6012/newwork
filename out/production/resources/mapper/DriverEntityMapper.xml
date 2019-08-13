@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.user.mapper.DriverDao">
+
+    <!--批量添修+表的数据-->
+    <update id="editBatchData">
+        <!--<foreach collection="list" item="item" index="index" open="" close="" separator=";">-->
+            <!--update t_driver-->
+            <!--<set>-->
+                <!--is_able = 0-->
+            <!--</set>-->
+            <!--where driver_id = #{item.driverId}-->
+        <!--</foreach>-->
+        update t_driver set is_able = 0 where driver_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+
+    </update>
+
+
+    <!--批量解除绑定-->
+    <update id="inBoundByIds">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update t_driver
+            <set>
+                is_bound = 0
+            </set>
+            where driver_id = #{item.driverId}
+        </foreach>
+    </update>
+
+    <!--批量绑定-->
+    <update id="boundByIds">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update t_driver
+            <set>
+                is_bound = 1
+            </set>
+            where driver_id = #{item.driverId}
+        </foreach>
+    </update>
+
+</mapper>

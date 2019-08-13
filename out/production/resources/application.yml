@@ -1,0 +1,57 @@
+mybatis-plus:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      web-stat-filter:
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        login-username: admin
+        login-password: 123456
+        allow: 127.0.0.1
+      filters: stat,wall,slf4j
+  redis:
+    host: 10.10.10.212
+    port: 6379
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+## fastDfs
+###############################
+fdfs:
+  so-timeout: 1500
+  connect-timeout: 600
+  tracker-list: 10.10.10.212:22122
+  pool:
+    max-total: 20
+    max-wait-millis: 100
+  #### jwt 认证配置  ######
+jwt:
+  header: token   #http请求头所需要的字段
+  secret: hantek       #jwt秘钥
+  expiration: 3000      #token有效期 5分钟 单位:秒
+  refresh-expiration: 86400      #刷新token有效期 24小时 单位:秒
+  filter-uris:
+    - /api/login/
+    - /file/
+    - /api/user/cardCheck
+    - /api/register/org
+    - /api/register/check/userIdCard
+    - /api/org/checkOrg
+    - /api/register/forget/password
+    - /api/register/forget/check
+    - /api/user/phoneNo/list/

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.matedata.mapper.CarDao">
+
+    <!--批量删除数据，逻辑删除，把is_able的值变为0-->
+    <update id="editBatchData">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update t_car
+            <set>
+                is_able = 0
+            </set>
+            where car_id = #{item.carId}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,17 @@
+# 日志
+logging:
+  config: classpath:logback-spring.xml
+# 监控
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+spring:
+  application:
+    name: xinya
+  profiles:
+    active: dev

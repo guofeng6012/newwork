@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.user.mapper.UserDao">
+
+	<!-- 分页查询用户 -->
+    <select id="findByPageUser" resultType="com.xsungroup.tms.user.vo.UserViewVO">
+            SELECT
+            	a.*, og.org_name AS 'createOrgName'
+            FROM
+            	(
+            		SELECT
+            			u.user_id,
+            			u.user_name,
+            			u.real_name,
+            			u.phone_no,
+            			re.role_name,
+            			u.user_status,
+            			u.top_id,
+            			u.last_login_time,
+            			o.audit_status,
+            			o.org_name,
+						u.gmt_create,
+            			u.org_id,
+            			re.role_id,
+            			u.is_super
+            		FROM
+            			c_user u
+            		LEFT JOIN c_user_role r ON r.user_id = u.user_id
+            		LEFT JOIN c_role re ON r.role_id = re.role_id
+            		LEFT JOIN t_org o ON u.org_id = o.org_id
+            		where u.is_able = 1
+            		and r.is_able = 1
+            		and re.is_able = 1
+            		and o.is_able = 1
+            	) AS a
+            LEFT JOIN t_org og ON a.top_id = og.org_id
+			where
+			a.org_id = #{user.orgId}
+			<if test="user.userName != null and user.userName != ''">
+				and a.user_name  like CONCAT('%',#{user.userName},'%')
+			</if>
+		    <if test="user.realName != null and user.realName != ''">
+		    	and a.real_name like CONCAT('%',#{user.realName},'%')
+		    </if>
+
+		    <if test="user.companyId != null and user.companyId != ''">
+		    	and a.company_id = #{user.companyId}
+		    </if>
+
+		    <if test="user.roleName != null and user.roleName != ''">
+		    	and a.role_name like CONCAT('%',#{user.roleName},'%')
+		    </if>
+
+			<!--<if test="user.roleId != null and user.roleId != ''">
+				and a.role_id = #{user.roleId}
+			</if>-->
+    </select>
+
+
+	<select id="findByUserAuditPage" resultType="com.xsungroup.tms.user.vo.UserAuditVO">
+		SELECT
+			c.user_id,
+			o.audit_status,
+			c.real_name,
+			c.phone_no,
+			o.org_role,
+			e.legal_person_id_no,
+			e.legal_person_id_card_validity_start,
+			e.legal_person_id_card_validity_end,
+			e.org_email,
+			e.last_audit_time,
+			e.last_submit_time,
+			e.audit_user
+		FROM
+			c_user c
+		LEFT JOIN t_org_extend e ON c.org_id = e.org_id
+		LEFT JOIN t_org o ON o.org_id = c.org_id
+		WHERE
+
+			<if test="phoneNo != null and phoneNo != '' ">
+				 c.phone_no like CONCAT('%',#{phoneNo},'%') and
+			</if>
+
+			<if test="realName != null and realName != '' ">
+				 c.real_name like CONCAT('%', #{realName},'%') and
+			</if>
+
+			<if test="auditStatus != null and auditStatus != '' ">
+				c.audit_status = #{auditStatus} and
+			</if>
+			<if test="orgRole !=null and orgRole != ''">
+				o.org_role = #{org_role} and
+			</if>
+		    c.is_able = 1 and o.biz_type = 1
+			order by c.gmt_create desc
+	</select>
+
+	<select id="getByUserAuditDetail" resultType="com.xsungroup.tms.user.vo.UserAuditDetailVO">
+		SELECT
+			c.real_name,
+			e.legal_person_id_no,
+			e.legal_person_id_card_validity_start,
+			e.legal_person_id_card_validity_end,
+			e.legal_person_id_card_re_url,
+			e.legal_person_id_card_url
+		FROM
+			c_user c
+		LEFT JOIN t_org_extend e ON c.org_id = e.org_id
+		where
+		c.user_id = #{userId}
+	</select>
+
+	<select id="findLoginUserById" resultType="com.xsungroup.tms.user.vo.CurrentUser">
+		SELECT t1.org_name,t2.org_name as group_name,t3.org_name as company_name,
+        u.group_id,u.org_id,u.company_id,t1.biz_type,
+        u.user_id,u.user_name,u.real_name,u.phone_no,u.user_status,t1.audit_status FROM c_user u
+        LEFT JOIN t_org t1 on  u.org_id = t1.org_id
+        LEFT JOIN t_org t2 on u.company_id = t2.org_id
+        LEFT JOIN t_org t3 on u.group_id = t3.org_id
+        WHERE u.user_id = #{userId} and u.is_able = 1
+	</select>
+</mapper>

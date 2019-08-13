@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.matedata.mapper.InsuranceDao">
+
+    <insert id="addBatchData" parameterType="arraylist">
+
+        insert into c_insurance(insurance_id,parent_id,type,insurance_code,insurance_name,expiry_date)
+        values
+        <foreach collection="list" item="ins" separator=",">
+            (#{ins.insuranceId},#{ins.parentId},#{ins.type},#{ins.insuranceCode},#{ins.insuranceName},#{ins.expiryDate})
+        </foreach>
+
+    </insert>
+
+    <update id="editBatchData" parameterType="arraylist">
+        <foreach collection="list" item="ins">
+            update c_insurance set insurance_code = #{ins.insuranceCode},
+            insurance_name = #{ins.insuranceName} ,
+            expiry_date = #{ins.expiryDate}
+            where
+            insurance_id = #{ins.insuranceId};
+        </foreach>
+    </update>
+
+</mapper>

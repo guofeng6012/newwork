@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.user.mapper.RoleDao">
+
+    <select id="findByPageRole" resultType="com.xsungroup.tms.user.vo.RoleViewVO">
+        SELECT
+            c.role_id,
+        	c.role_code,
+        	c.gmt_create,
+        	c.role_name,
+        	t.org_id ,
+        	t.org_name as 'orgName'
+        FROM
+        	c_role c
+        LEFT JOIN t_org t ON c.org_id = t.org_id
+        LEFT JOIN t_org tg ON c.group_id = t.org_id
+        where
+        c.org_id = #{role.orgId} and c.is_able = 1
+        <if test="role.roleCode != null and role.roleCode != '' ">
+            and c.role_code like CONCAT('%',#{role.roleCode},'%')
+        </if>
+
+        <if test="role.roleName != null and role.roleName != '' ">
+            and c.role_name like CONCAT('%',#{role.roleName},'%')
+        </if>
+
+
+
+        <if test="role.groupId != null and role.groupId != '' ">
+            and c.group_id like CONCAT('%',#{role.groupId},'%')
+        </if>
+
+    </select>
+</mapper>

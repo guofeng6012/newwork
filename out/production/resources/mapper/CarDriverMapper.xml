@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xsungroup.tms.matedata.mapper.CarDriverDao">
+
+    <!--批量添加子表的数据-->
+    <insert id="addBatchData">
+        insert into t_car_driver(car_driver_id,car_id,driver_id,driver_name,is_default,create_user,update_user) VALUES
+        <foreach collection="list" item="entity" separator=",">
+            (#{entity.carDriverId},#{entity.carId},#{entity.driverId},#{entity.driverName},#{entity.isDefault},#{entity.createUser},#{entity.updateUser})
+        </foreach>
+    </insert>
+
+</mapper>
